@@ -56,43 +56,44 @@ public class Game {
     }
     
 
-    public boolean isThreat(boolean white,int tx,int ty)
-    {   
-        if(white)
-            for(Piece piece : whitePieces)
-            {
-                if(piece.canEat(tx, ty))
-                {
-                    return true;
-                }
-            }
-        else
-            for(Piece piece:blackPieces)
-            {
-                if(piece.canEat(tx, ty))
-                {
-                    return true;
-                }
-            }
-        return false;
-    }
+    // public boolean isThreat(boolean white,int tx,int ty)
+    // {   
+    //     if(white)
+    //         for(Piece piece : whitePieces)
+    //         {
+    //             if(piece.canEat(tx, ty))
+    //             {
+    //                 return true;
+    //             }
+    //         }
+    //     else
+    //         for(Piece piece:blackPieces)
+    //         {
+    //             if(piece.canEat(tx, ty))
+    //             {
+    //                 return true;
+    //             }
+    //         }
+    //     return false;
+    // }
 
-    public boolean isCheck()
+    public boolean isCheck(boolean white)
     {   
         this.check = false;
-        whitePieces.forEach(piece->{
-            if(piece.canEat(this.blackKing.x,this.blackKing.y))
-            {
-                this.check = true;
-            }
-        });
-
-        blackPieces.forEach(piece->{
-            if(piece.canEat(this.whiteKing.x,this.whiteKing.y))
-            {
-                this.check = true;
-            }
-        });
+        if(!white)
+            whitePieces.forEach(piece->{
+                if(piece.canEat(this.blackKing.x,this.blackKing.y))
+                {
+                    this.check = true;
+                }
+            });
+        else
+            blackPieces.forEach(piece->{
+                if(piece.canEat(this.whiteKing.x,this.whiteKing.y))
+                {
+                    this.check = true;
+                }
+            });
 
         return this.check;
         
@@ -101,10 +102,7 @@ public class Game {
     public void update()
     {   
         
-        if(selectedPiece!=null)
-        {
-
-        }
+        
     }
 
     
@@ -136,11 +134,18 @@ public class Game {
     
     public void movePiece(int tx,int ty)
     {   
-        
+        int pre_x = selectedPiece.x;
+        int pre_y = selectedPiece.y;
+
+
         if(tx == selectedPiece.getX() && ty == selectedPiece.getY())
             return;
         if(!selectedPiece.canMove(tx,ty) && !selectedPiece.canEat(tx,ty))
             return;
+
+
+        
+      
         if(this.selectedPiece.isWhite())
         {
             if(this.turn%2==0){
@@ -152,8 +157,14 @@ public class Game {
                 this.selectedPiece.moveTo(tx,ty);
             }
         }
+        if(isCheck(selectedPiece.white)){
+
+            System.out.printf("\n\n !! Movimento Inválido, você esta em cheque !! \n\n");
+            this.selectedPiece.moveTo(pre_x,pre_y);
+            return;
+        }   
         this.turn+=1;
-        isCheck();
+        isCheck(!selectedPiece.white);
     }
 
 
